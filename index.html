@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tang-Song Literature Chronological Map - Emotional Evolution Research Platform</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&family=Crimson+Text:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="header-left">
+            <img src="Trinity_Main_Logo.jpg" alt="Trinity College Dublin" class="tcd-logo">
+            <div class="header-content">
+                <h1 class="title">Tang-Song Literature Chronological Map</h1>
+                <p class="subtitle">Exploring Emotional Evolution in Classical Chinese Poetry</p>
+            </div>
+        </div>
+        <div class="header-controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search poets, poems or places...">
+                <button id="searchBtn">🔍</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-container">
+        <!-- Left Control Panel -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Dynasty Selection</h3>
+                <div class="dynasty-selector">
+                    <label class="dynasty-option">
+                        <input type="radio" name="dynasty" value="tang" checked>
+                        <span>Tang Dynasty (618-907)</span>
+                    </label>
+                    <label class="dynasty-option">
+                        <input type="radio" name="dynasty" value="song">
+                        <span>Song Dynasty (960-1279)</span>
+                    </label>
+                    <label class="dynasty-option">
+                        <input type="radio" name="dynasty" value="all">
+                        <span>All Periods</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Emotional Categories</h3>
+                <div class="emotion-filters">
+                    <label class="emotion-option">
+                        <input type="checkbox" value="joy" checked>
+                        <span class="emotion-color joy"></span>
+                        Joy (Happiness, Optimism)
+                    </label>
+                    <label class="emotion-option">
+                        <input type="checkbox" value="sadness" checked>
+                        <span class="emotion-color sadness"></span>
+                        Sadness (Longing, Sorrow)
+                    </label>
+                    <label class="emotion-option">
+                        <input type="checkbox" value="nostalgia" checked>
+                        <span class="emotion-color nostalgia"></span>
+                        Nostalgia (Reminiscence, Reflection)
+                    </label>
+                    <label class="emotion-option">
+                        <input type="checkbox" value="nature" checked>
+                        <span class="emotion-color nature"></span>
+                        Nature (Landscape, Pastoral)
+                    </label>
+                    <label class="emotion-option">
+                        <input type="checkbox" value="love" checked>
+                        <span class="emotion-color love"></span>
+                        Love (Romance, Separation)
+                    </label>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Famous Poets</h3>
+                <div class="poet-list">
+                    <div class="poet-item" data-poet="libai">
+                        <span class="poet-name">李白 (Li Bai)</span>
+                        <span class="poet-count">3 poems</span>
+                    </div>
+                    <div class="poet-item" data-poet="dufu">
+                        <span class="poet-name">杜甫 (Du Fu)</span>
+                        <span class="poet-count">1 poem</span>
+                    </div>
+                    <div class="poet-item" data-poet="sushi">
+                        <span class="poet-name">苏轼 (Su Shi)</span>
+                        <span class="poet-count">2 poems</span>
+                    </div>
+                    <div class="poet-item" data-poet="liqingzhao">
+                        <span class="poet-name">李清照 (Li Qingzhao)</span>
+                        <span class="poet-count">2 poems</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Map Area -->
+        <div class="map-container">
+            <div id="map"></div>
+            
+            <!-- Timeline Controller -->
+            <div class="timeline-container">
+                <div class="timeline-header">
+                    <h4>Timeline</h4>
+                    <div class="timeline-controls">
+                        <button id="playBtn">▶️</button>
+                        <button id="pauseBtn">⏸️</button>
+                        <button id="resetBtn">⏹️</button>
+                    </div>
+                </div>
+                <div class="timeline-slider">
+                    <input type="range" id="timeSlider" min="618" max="1279" value="618" step="10">
+                    <div class="timeline-labels">
+                        <span>618 CE (Early Tang)</span>
+                        <span id="currentYear">618 CE</span>
+                        <span>1279 CE (End of Song)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Details Panel -->
+        <aside class="details-panel" id="detailsPanel">
+            <div class="details-header">
+                <h3>Poem Details</h3>
+                <button class="close-btn" id="closeDetails">×</button>
+            </div>
+            <div class="details-content" id="detailsContent">
+                <div class="welcome-message">
+                    <h4>Welcome to Tang-Song Literature Chronological Map</h4>
+                    <p>Click on map markers to explore literary works from different periods and regions, experiencing the emotional evolution of ancient Chinese poets.</p>
+                    <div class="usage-tips">
+                        <h5>User Guide:</h5>
+                        <ul>
+                            <li>🎯 Click map markers to view poem details</li>
+                            <li>⏱️ Drag the timeline to explore different periods</li>
+                            <li>🎨 Select emotional categories to filter works</li>
+                            <li>👨‍🎨 Click poet names to view their work distribution</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Loading Animation -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Loading classical literature data...</p>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 

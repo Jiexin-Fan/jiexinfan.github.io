@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test - Tang-Song Poetry</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .debug-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #console-output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Debug Test Page</h1>
+    
+    <div class="debug-panel">
+        <h2>External Libraries Check</h2>
+        <div id="lib-status"></div>
+        <button onclick="checkLibraries()">Check Libraries</button>
+    </div>
+    
+    <div class="debug-panel">
+        <h2>Data Files Check</h2>
+        <div id="data-status"></div>
+        <button onclick="checkDataFiles()">Check Data Files</button>
+    </div>
+    
+    <div class="debug-panel">
+        <h2>Basic Initialization Test</h2>
+        <div id="init-status"></div>
+        <button onclick="testInitialization()">Test Basic Init</button>
+    </div>
+    
+    <div class="debug-panel">
+        <h2>Console Output</h2>
+        <div id="console-output"></div>
+        <button onclick="clearConsole()">Clear Console</button>
+    </div>
+
+    <!-- Include the same libraries as the original -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    
+    <!-- Try to include data files -->
+    <script src="emotion-data.js"></script>
+
+    <script>
+        // Override console methods to capture output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsole(type, message) {
+            const output = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            output.innerHTML += `<div style="color: ${type === 'error' ? 'red' : type === 'warn' ? 'orange' : 'blue'}">[${timestamp}] ${type.toUpperCase()}: ${message}</div>`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole('log', args.join(' '));
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole('error', args.join(' '));
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole('warn', args.join(' '));
+        };
+        
+        function clearConsole() {
+            document.getElementById('console-output').innerHTML = '';
+        }
+        
+        function showStatus(elementId, message, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function checkLibraries() {
+            console.log('🔍 Checking external libraries...');
+            
+            const checks = [
+                { name: 'Leaflet', check: () => typeof L !== 'undefined' },
+                { name: 'Chart.js', check: () => typeof Chart !== 'undefined' },
+                { name: 'D3.js', check: () => typeof d3 !== 'undefined' },
+                { name: 'Leaflet Heat', check: () => typeof L !== 'undefined' && L.heatLayer }
+            ];
+            
+            let allPassed = true;
+            let results = '';
+            
+            checks.forEach(lib => {
+                try {
+                    const passed = lib.check();
+                    results += `✅ ${lib.name}: ${passed ? 'LOADED' : 'MISSING'}<br>`;
+                    if (!passed) allPassed = false;
+                } catch (error) {
+                    results += `❌ ${lib.name}: ERROR - ${error.message}<br>`;
+                    allPassed = false;
+                }
+            });
+            
+            showStatus('lib-status', results, allPassed ? 'success' : 'error');
+            console.log(`Libraries check: ${allPassed ? 'PASSED' : 'FAILED'}`);
+        }
+        
+        function checkDataFiles() {
+            console.log('🔍 Checking data files...');
+            
+            const checks = [
+                { name: 'PERIODS', check: () => typeof PERIODS !== 'undefined' },
+                { name: 'EMOTIONS', check: () => typeof EMOTIONS !== 'undefined' },
+                { name: 'REGIONS', check: () => typeof REGIONS !== 'undefined' },
+                { name: 'emotionData', check: () => typeof emotionData !== 'undefined' }
+            ];
+            
+            let allPassed = true;
+            let results = '';
+            
+            checks.forEach(data => {
+                try {
+                    const passed = data.check();
+                    results += `${passed ? '✅' : '❌'} ${data.name}: ${passed ? 'AVAILABLE' : 'MISSING'}<br>`;
+                    if (!passed) allPassed = false;
+                } catch (error) {
+                    results += `❌ ${data.name}: ERROR - ${error.message}<br>`;
+                    allPassed = false;
+                }
+            });
+            
+            showStatus('data-status', results, allPassed ? 'success' : 'error');
+            console.log(`Data files check: ${allPassed ? 'PASSED' : 'FAILED'}`);
+        }
+        
+        function testInitialization() {
+            console.log('🧪 Testing basic initialization...');
+            
+            try {
+                // Test basic DOM manipulation
+                console.log('Testing DOM access...');
+                const testDiv = document.createElement('div');
+                testDiv.textContent = 'Test element';
+                
+                // Test period data access
+                console.log('Testing PERIODS data...');
+                if (typeof PERIODS !== 'undefined') {
+                    const periodKeys = Object.keys(PERIODS);
+                    console.log(`Found ${periodKeys.length} periods: ${periodKeys.join(', ')}`);
+                }
+                
+                // Test emotion data access
+                console.log('Testing EMOTIONS data...');
+                if (typeof EMOTIONS !== 'undefined') {
+                    const emotionKeys = Object.keys(EMOTIONS);
+                    console.log(`Found ${emotionKeys.length} emotions: ${emotionKeys.join(', ')}`);
+                }
+                
+                // Test basic Leaflet map creation
+                console.log('Testing Leaflet map creation...');
+                const testMapDiv = document.createElement('div');
+                testMapDiv.style.width = '100px';
+                testMapDiv.style.height = '100px';
+                document.body.appendChild(testMapDiv);
+                
+                const testMap = L.map(testMapDiv, {
+                    center: [35.0, 113.0],
+                    zoom: 5,
+                    zoomControl: false,
+                    attributionControl: false
+                });
+                
+                console.log('Leaflet map created successfully');
+                document.body.removeChild(testMapDiv);
+                
+                showStatus('init-status', '✅ All basic initialization tests passed!', 'success');
+                console.log('🎉 Basic initialization test: PASSED');
+                
+            } catch (error) {
+                showStatus('init-status', `❌ Initialization failed: ${error.message}`, 'error');
+                console.error('💥 Basic initialization test: FAILED', error);
+            }
+        }
+        
+        // Run automatic checks when page loads
+        window.addEventListener('load', () => {
+            console.log('🚀 Debug page loaded, running automatic checks...');
+            setTimeout(() => {
+                checkLibraries();
+                setTimeout(() => {
+                    checkDataFiles();
+                    setTimeout(() => {
+                        testInitialization();
+                    }, 500);
+                }, 500);
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

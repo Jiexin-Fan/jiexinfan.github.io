@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tang-Song Poetry Emotional Flow Analysis</title>
+    
+    <!-- External Libraries -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="emotion-flow.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <img src="https://www.tcd.ie/media/tcd/site-assets/images/tcd-logo.png" alt="Trinity College Dublin" class="tcd-logo">
+            <div class="header-content">
+                <h1 class="title">Tang-Song Poetry Emotional Flow Analysis</h1>
+                <p class="subtitle">Advanced Temporal-Spatial Sentiment Visualization (20,000+ Poems)</p>
+            </div>
+        </div>
+        <div class="header-controls">
+            <div class="view-selector">
+                <button class="view-btn active" data-view="flow">Emotional Flow</button>
+                <button class="view-btn" data-view="heatmap">Temporal Matrix</button>
+                <button class="view-btn" data-view="historical-map">Historical Maps</button>
+                <button class="view-btn" data-view="trends">Trend Analysis</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Left Panel: Controls -->
+        <aside class="control-panel">
+            <div class="panel-section">
+                <h3>Visualization Controls</h3>
+                <div class="control-group">
+                    <label>Animation Speed:</label>
+                    <select id="animationSpeed">
+                        <option value="2000">Slow</option>
+                        <option value="1000" selected>Normal</option>
+                        <option value="500">Fast</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Granularity:</label>
+                    <select id="timeGranularity">
+                        <option value="period">By Period</option>
+                        <option value="decade" selected>By Decade</option>
+                        <option value="year">By Year</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <button id="playAnimation" class="control-btn">▶ Play Timeline</button>
+                    <button id="pauseAnimation" class="control-btn">⏸ Pause</button>
+                    <button id="resetAnimation" class="control-btn">⏹ Reset</button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3>Regional Focus</h3>
+                <div class="region-selector">
+                    <label class="region-option">
+                        <input type="checkbox" value="north-china" checked>
+                        <span>North China (华北)</span>
+                    </label>
+                    <label class="region-option">
+                        <input type="checkbox" value="south-china" checked>
+                        <span>South China (华南)</span>
+                    </label>
+                    <label class="region-option">
+                        <input type="checkbox" value="central-china" checked>
+                        <span>Central China (华中)</span>
+                    </label>
+                    <label class="region-option">
+                        <input type="checkbox" value="west-china" checked>
+                        <span>West China (西部)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3>Current Statistics</h3>
+                <div class="stats-display">
+                    <div class="stat-card">
+                        <div class="stat-value" id="currentPeriod">Early Tang</div>
+                        <div class="stat-label">Current Period</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="dominantEmotion">Positive</div>
+                        <div class="stat-label">Dominant Emotion</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="emotionalShift">+0.15</div>
+                        <div class="stat-label">Emotional Shift</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3>Legend</h3>
+                <div class="legend-container" id="emotionLegend">
+                    <!-- Dynamic legend content -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center: Main Visualization Area -->
+        <div class="visualization-area">
+            <!-- Flow Chart View -->
+            <div class="view-container" id="flowView">
+                <div class="chart-header">
+                    <h2>Emotional Flow Across Periods</h2>
+                    <p>River chart showing how emotions evolve and flow between time periods and regions</p>
+                </div>
+                <div class="flow-chart-container">
+                    <svg id="flowChart" width="100%" height="600"></svg>
+                </div>
+            </div>
+
+            <!-- Heatmap Matrix View -->
+            <div class="view-container hidden" id="heatmapView">
+                <div class="chart-header">
+                    <h2>Temporal-Spatial Emotion Matrix</h2>
+                    <p>Heatmap showing emotional intensity across time and regions</p>
+                </div>
+                <div class="heatmap-container">
+                    <svg id="heatmapChart" width="100%" height="500"></svg>
+                </div>
+            </div>
+
+            <!-- Historical Map View -->
+            <div class="view-container hidden" id="historicalMapView">
+                <div class="chart-header">
+                    <h2>Historical Maps with Emotional Overlay</h2>
+                    <p>Period-specific maps showing territorial changes and emotional patterns</p>
+                </div>
+                <div class="historical-map-container">
+                    <div id="historicalMap" style="height: 500px;"></div>
+                    <div class="map-period-selector">
+                        <button class="period-btn active" data-period="tang">Tang Dynasty</button>
+                        <button class="period-btn" data-period="song">Song Dynasty</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trend Analysis View -->
+            <div class="view-container hidden" id="trendsView">
+                <div class="chart-header">
+                    <h2>Multi-dimensional Trend Analysis</h2>
+                    <p>Statistical analysis of emotional trends across multiple dimensions</p>
+                </div>
+                <div class="trends-container">
+                    <div class="trend-chart">
+                        <canvas id="multiTrendChart" width="100%" height="300"></canvas>
+                    </div>
+                    <div class="correlation-matrix">
+                        <h4>Regional Correlation Matrix</h4>
+                        <svg id="correlationMatrix" width="100%" height="250"></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline Scrubber -->
+            <div class="timeline-scrubber">
+                <div class="scrubber-header">
+                    <span>Timeline Navigation</span>
+                    <span id="timelineLabel">618 CE - 1279 CE</span>
+                    <span style="font-size: 0.8em; color: #7F8C8D;">Drag or click to explore different time periods</span>
+                </div>
+                <div class="scrubber-track">
+                    <input type="range" id="timelineScrubber" min="0" max="100" value="0" class="scrubber-slider">
+                    <div class="period-markers">
+                        <div class="period-marker" style="left: 0%">618</div>
+                        <div class="period-marker" style="left: 14%">713</div>
+                        <div class="period-marker" style="left: 23%">767</div>
+                        <div class="period-marker" style="left: 33%">836</div>
+                        <div class="period-marker" style="left: 52%">960</div>
+                        <div class="period-marker" style="left: 77%">1127</div>
+                        <div class="period-marker" style="left: 100%">1279</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Detailed Analysis -->
+        <aside class="analysis-panel">
+            <div class="panel-section">
+                <h3>Period Analysis</h3>
+                <div class="period-detail" id="periodDetail">
+                    <h4>Early Tang (618-712 CE)</h4>
+                    <div class="emotional-profile">
+                        <div class="emotion-bar">
+                            <span>Positive</span>
+                            <div class="bar"><div class="fill positive" style="width: 45%"></div></div>
+                            <span>45%</span>
+                        </div>
+                        <div class="emotion-bar">
+                            <span>Implicit Positive</span>
+                            <div class="bar"><div class="fill implicit-positive" style="width: 20%"></div></div>
+                            <span>20%</span>
+                        </div>
+                        <div class="emotion-bar">
+                            <span>Neutral</span>
+                            <div class="bar"><div class="fill neutral" style="width: 20%"></div></div>
+                            <span>20%</span>
+                        </div>
+                        <div class="emotion-bar">
+                            <span>Implicit Negative</span>
+                            <div class="bar"><div class="fill implicit-negative" style="width: 10%"></div></div>
+                            <span>10%</span>
+                        </div>
+                        <div class="emotion-bar">
+                            <span>Negative</span>
+                            <div class="bar"><div class="fill negative" style="width: 5%"></div></div>
+                            <span>5%</span>
+                        </div>
+                    </div>
+                    <div class="period-insights">
+                        <p><strong>Key Characteristics:</strong> High optimism reflecting dynastic expansion and cultural confidence.</p>
+                        <p><strong>Historical Context:</strong> Establishment period with territorial expansion and economic growth.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3>Regional Patterns</h3>
+                <div class="regional-analysis">
+                    <div class="region-card">
+                        <h5>Chang'an Region</h5>
+                        <div class="region-emotion-score positive">+0.32</div>
+                        <p>Political center with optimistic outlook</p>
+                    </div>
+                    <div class="region-card">
+                        <h5>Jiangnan Region</h5>
+                        <div class="region-emotion-score neutral">+0.08</div>
+                        <p>Cultural refinement with balanced sentiment</p>
+                    </div>
+                    <div class="region-card">
+                        <h5>Border Regions</h5>
+                        <div class="region-emotion-score negative">-0.15</div>
+                        <p>Frontier anxiety and military concerns</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3>Flow Insights</h3>
+                <div class="flow-insights" id="flowInsights">
+                    <div class="insight-item">
+                        <span class="insight-icon">📈</span>
+                        <div>
+                            <strong>Major Trend:</strong>
+                            <p>Positive emotions decline from High Tang to Late Tang period</p>
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">🗺️</span>
+                        <div>
+                            <strong>Geographic Shift:</strong>
+                            <p>Cultural center moves from North to South during Song dynasty</p>
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">🔄</span>
+                        <div>
+                            <strong>Emotional Transition:</strong>
+                            <p>Tang's external focus shifts to Song's introspective themes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-animation">
+                <div class="flow-lines">
+                    <div class="flow-line" style="animation-delay: 0s;"></div>
+                    <div class="flow-line" style="animation-delay: 0.5s;"></div>
+                    <div class="flow-line" style="animation-delay: 1s;"></div>
+                </div>
+            </div>
+            <h3>Analyzing Emotional Flow Patterns</h3>
+            <p>Processing 661 years of literary sentiment evolution...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="emotion-flow-data.js"></script>
+    <script src="emotion-flow.js"></script>
+</body>
+</html> 

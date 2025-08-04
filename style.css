@@ -1,0 +1,643 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* 主色调 - 古典雅致 */
+    --primary-color: #8B4513;
+    --secondary-color: #D2691E;
+    --accent-color: #CD853F;
+    --bg-primary: #FFF8DC;
+    --bg-secondary: #FAEBD7;
+    --text-primary: #2F4F4F;
+    --text-secondary: #696969;
+    --border-color: #DDD;
+    --shadow: 0 2px 10px rgba(0,0,0,0.1);
+    
+    /* 情感色彩 */
+    --color-joy: #FFD700;
+    --color-sadness: #4682B4;
+    --color-nostalgia: #8B7355;
+    --color-nature: #228B22;
+    --color-love: #DC143C;
+    
+    /* 字体 */
+    --font-serif: 'Crimson Text', 'Noto Serif SC', serif;
+    --font-sans: 'Inter', sans-serif;
+}
+
+body {
+    font-family: var(--font-sans);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* 头部样式 */
+.header {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.tcd-logo {
+    height: 60px;
+    width: auto;
+    /* filter: brightness(0) invert(1); - Removed to show Trinity logo properly */
+    transition: all 0.3s ease;
+}
+
+.tcd-logo:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.8));
+}
+
+.header-content .title {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.header-content .subtitle {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+.search-box {
+    display: flex;
+    background: white;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
+}
+
+.search-box:hover {
+    transform: translateY(-1px);
+}
+
+.search-box input {
+    border: none;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    width: 250px;
+    outline: none;
+    font-family: var(--font-sans);
+}
+
+.search-box button {
+    background: var(--accent-color);
+    border: none;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s ease;
+}
+
+.search-box button:hover {
+    background: var(--secondary-color);
+}
+
+/* 主容器布局 */
+.main-container {
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    height: calc(100vh - 100px);
+    gap: 0;
+}
+
+/* 侧边栏样式 */
+.sidebar {
+    background: white;
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+}
+
+.sidebar-section {
+    margin-bottom: 2rem;
+}
+
+.sidebar-section h3 {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 0.5rem;
+}
+
+/* 朝代选择器 */
+.dynasty-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.dynasty-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.dynasty-option:hover {
+    background: var(--bg-secondary);
+}
+
+.dynasty-option input {
+    margin-right: 0.75rem;
+    accent-color: var(--primary-color);
+}
+
+/* 情感分类样式 */
+.emotion-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.emotion-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.emotion-option:hover {
+    background: var(--bg-secondary);
+}
+
+.emotion-option input {
+    margin-right: 0.5rem;
+}
+
+.emotion-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    border: 1px solid #ccc;
+}
+
+.emotion-color.joy { background: var(--color-joy); }
+.emotion-color.sadness { background: var(--color-sadness); }
+.emotion-color.nostalgia { background: var(--color-nostalgia); }
+.emotion-color.nature { background: var(--color-nature); }
+.emotion-color.love { background: var(--color-love); }
+
+/* 诗人列表 */
+.poet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.poet-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.poet-item:hover {
+    background: var(--accent-color);
+    color: white;
+    border-left-color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.poet-name {
+    font-weight: 500;
+    font-family: var(--font-serif);
+}
+
+.poet-count {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+/* 地图容器 */
+.map-container {
+    position: relative;
+    background: white;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+}
+
+/* 时间轴容器 */
+.timeline-container {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.timeline-header h4 {
+    font-family: var(--font-serif);
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.timeline-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.timeline-controls button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.timeline-controls button:hover {
+    background: var(--secondary-color);
+}
+
+.timeline-slider {
+    width: 100%;
+}
+
+#timeSlider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg-secondary);
+    outline: none;
+    -webkit-appearance: none;
+    margin-bottom: 0.5rem;
+}
+
+#timeSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+#timeSlider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.timeline-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+#currentYear {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* 详情面板 */
+.details-panel {
+    background: white;
+    border-left: 1px solid var(--border-color);
+    padding: 0;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.details-panel.active {
+    transform: translateX(0);
+}
+
+.details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.details-header h3 {
+    font-family: var(--font-serif);
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+    color: var(--primary-color);
+}
+
+.details-content {
+    padding: 1.5rem;
+}
+
+.welcome-message h4 {
+    font-family: var(--font-serif);
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.welcome-message p {
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.usage-tips h5 {
+    font-family: var(--font-serif);
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+}
+
+.usage-tips ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.usage-tips li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+    line-height: 1.5;
+}
+
+.usage-tips li:last-child {
+    border-bottom: none;
+}
+
+/* 诗词详情卡片 */
+.poem-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.poem-title {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.poem-author {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.poem-content {
+    font-family: var(--font-serif);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    white-space: pre-line;
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.poem-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.meta-tag {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+}
+
+/* 详情面板各个部分 */
+.analysis-section,
+.poet-section,
+.location-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.analysis-section h4,
+.poet-section h4,
+.location-section h4 {
+    font-family: var(--font-serif);
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.analysis-section p,
+.poet-section p,
+.location-section p {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+.poet-item.active {
+    background: var(--primary-color) !important;
+    color: white !important;
+    border-left-color: var(--accent-color) !important;
+    transform: translateX(5px);
+}
+
+/* 加载动画 */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 248, 220, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+.loading-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 地图标记样式 */
+.custom-marker {
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.custom-marker:hover {
+    transform: scale(1.1);
+}
+
+.marker-joy { background: var(--color-joy); }
+.marker-sadness { background: var(--color-sadness); }
+.marker-nostalgia { background: var(--color-nostalgia); }
+.marker-nature { background: var(--color-nature); }
+.marker-love { background: var(--color-love); }
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .main-container {
+        grid-template-columns: 250px 1fr 280px;
+    }
+}
+
+@media (max-width: 992px) {
+    .main-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+    }
+    
+    .sidebar {
+        order: 2;
+        padding: 1rem;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .map-container {
+        order: 1;
+        height: 60vh;
+    }
+    
+    .details-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2000;
+    }
+    
+    .timeline-container {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+    }
+    
+    .header-content .title {
+        font-size: 1.5rem;
+    }
+    
+    .search-box input {
+        width: 200px;
+    }
+    
+    .sidebar-section {
+        margin-bottom: 1rem;
+    }
+    
+    .timeline-container {
+        padding: 0.75rem;
+    }
+    
+    .timeline-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+} 

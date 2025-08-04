@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tang-Song Poetry Emotional Evolution Analysis</title>
+    
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="emotion-evolution.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&family=Crimson+Text:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <img src="Trinity_Main_Logo.jpg" alt="Trinity College Dublin" class="tcd-logo">
+            <div class="header-content">
+                <h1 class="title">Tang-Song Poetry Emotional Evolution Analysis</h1>
+                <p class="subtitle">Advanced Visualization of Literary Sentiment Changes (20,000+ Poems)</p>
+            </div>
+        </div>
+        <div class="header-controls">
+            <div class="view-selector">
+                <button class="view-btn active" data-view="overview">Overview</button>
+                <button class="view-btn" data-view="timeline">Timeline</button>
+                <button class="view-btn" data-view="heatmap">Heatmap</button>
+                <button class="view-btn" data-view="comparison">Comparison</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Left Panel: Controls & Statistics -->
+        <aside class="left-panel">
+            <!-- Real-time Statistics -->
+            <div class="panel-section">
+                <h3>Current Statistics</h3>
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span class="stat-label">Current Period</span>
+                        <span class="stat-value" id="currentPeriodName">Early Tang (初唐)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Time Range</span>
+                        <span class="stat-value" id="timeRange">618-712 CE</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Poems</span>
+                        <span class="stat-value" id="totalPoems">3,127</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Most Prevalent</span>
+                        <span class="stat-value" id="mostPrevalent">Positive (42%)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Emotional Score</span>
+                        <span class="stat-value trend-up" id="emotionalScore">+0.15</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie Chart -->
+            <div class="panel-section">
+                <h3>Emotion Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="emotionPieChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Historical Periods -->
+            <div class="panel-section">
+                <h3>Historical Periods</h3>
+                <div class="period-selector">
+                    <label class="period-option">
+                        <input type="checkbox" value="early-tang" checked>
+                        <span>Early Tang (初唐) 618-712</span>
+                    </label>
+                    <label class="period-option">
+                        <input type="checkbox" value="high-tang" checked>
+                        <span>High Tang (盛唐) 713-766</span>
+                    </label>
+                    <label class="period-option">
+                        <input type="checkbox" value="mid-tang" checked>
+                        <span>Mid Tang (中唐) 767-835</span>
+                    </label>
+                    <label class="period-option">
+                        <input type="checkbox" value="late-tang" checked>
+                        <span>Late Tang (晚唐) 836-907</span>
+                    </label>
+                    <label class="period-option">
+                        <input type="checkbox" value="north-song" checked>
+                        <span>Northern Song (北宋) 960-1127</span>
+                    </label>
+                    <label class="period-option">
+                        <input type="checkbox" value="south-song" checked>
+                        <span>Southern Song (南宋) 1127-1279</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Emotion Categories -->
+            <div class="panel-section">
+                <h3>Emotional Categories</h3>
+                <div class="emotion-selector">
+                    <label class="emotion-option">
+                        <input type="checkbox" value="positive" checked>
+                        <span class="emotion-color positive"></span>
+                        Positive
+                    </label>
+                    <label class="emotion-option">
+                        <input type="checkbox" value="implicit-positive" checked>
+                        <span class="emotion-color implicit-positive"></span>
+                        Implicit Positive
+                    </label>
+                    <label class="emotion-option">
+                        <input type="checkbox" value="neutral" checked>
+                        <span class="emotion-color neutral"></span>
+                        Neutral
+                    </label>
+                    <label class="emotion-option">
+                        <input type="checkbox" value="implicit-negative" checked>
+                        <span class="emotion-color implicit-negative"></span>
+                        Implicit Negative
+                    </label>
+                    <label class="emotion-option">
+                        <input type="checkbox" value="negative" checked>
+                        <span class="emotion-color negative"></span>
+                        Negative
+                    </label>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center: Map Visualization -->
+        <div class="map-section">
+            <div id="map"></div>
+            
+            <!-- Timeline Controls -->
+            <div class="timeline-container">
+                <div class="timeline-header">
+                    <h4>Historical Timeline</h4>
+                    <div class="timeline-info">
+                        <span>Click on any period to explore its emotional patterns</span>
+                    </div>
+                </div>
+                
+                <!-- Period Slider -->
+                <div class="period-slider">
+                    <input type="range" id="periodSlider" min="0" max="5" value="0" step="1">
+                    <div class="period-labels">
+                        <span>Early Tang</span>
+                        <span>High Tang</span>
+                        <span>Mid Tang</span>
+                        <span>Late Tang</span>
+                        <span>N. Song</span>
+                        <span>S. Song</span>
+                    </div>
+                    <div class="current-period" id="currentPeriod">Early Tang (618-712 CE)</div>
+                </div>
+            </div>
+
+            <!-- Map Mode Selector -->
+            <div class="map-controls">
+                <div class="map-mode-selector">
+                    <button class="mode-btn active" data-mode="markers">Markers</button>
+                    <button class="mode-btn" data-mode="heatmap">Heatmap</button>
+                    <button class="mode-btn" data-mode="clusters">Clusters</button>
+                </div>
+                <div class="legend" id="mapLegend">
+                    <!-- Dynamic legend content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Trend Analysis -->
+        <aside class="right-panel">
+            <!-- Temporal Trend Chart -->
+            <div class="panel-section">
+                <h3>Emotional Evolution Over Time</h3>
+                <div class="chart-container large">
+                    <canvas id="trendLineChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Regional Comparison -->
+            <div class="panel-section">
+                <h3>Regional Emotional Patterns</h3>
+                <div class="chart-container">
+                    <canvas id="regionalBarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Overall Emotional Trend -->
+            <div class="panel-section">
+                <h3>Overall Emotional Evolution</h3>
+                <div class="chart-container large">
+                    <canvas id="overallTrendChart"></canvas>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Data Overlay for Detailed View -->
+    <div class="data-overlay" id="dataOverlay">
+        <div class="overlay-content">
+            <div class="overlay-header">
+                <h3>Detailed Analysis</h3>
+                <button class="close-overlay" id="closeOverlay">×</button>
+            </div>
+            <div class="overlay-body" id="overlayBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>Loading 20,000+ Classical Chinese Poems</h3>
+            <p>Analyzing emotional patterns across 661 years of literary history...</p>
+            <div class="loading-progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="emotion-data.js"></script>
+    <script src="emotion-evolution.js"></script>
+</body>
+</html> 
